@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather/weather.dart';
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/services/location_service.dart';
-import 'home_screen.dart'; // your home screen import
-import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // add this package for dots
+import 'home_screen.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({
+    super.key,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -167,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         SnackBar(content: Text("Lat: $lat, Lon: $lon")),
       );
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => HomeScreen()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
