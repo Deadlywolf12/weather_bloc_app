@@ -12,8 +12,12 @@ class ForecastBloc extends Bloc<ForecastEvent, ForecastState> {
     on<FetchForecast>((event, emit) async {
       emit(ForecastLoading());
 
-      final cacheService = CacheService(event.longitude, event.latitude);
-      final forecastResponse = await cacheService.GetForecastData();
+      final cacheService = CacheService(
+        event.longitude ?? 0.0,
+        event.latitude ?? 0.0,
+      );
+      final forecastResponse = await cacheService.GetForecastData(
+          event.UseCacheOnly, event.isRefresh);
       if (forecastResponse.forecastList.isNotEmpty) {
         emit(ForecastLoaded(forecastResponse));
       } else {

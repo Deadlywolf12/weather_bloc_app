@@ -1,5 +1,3 @@
-import 'package:weather/weather.dart';
-
 class WeatherData {
   final int id;
   final String main;
@@ -28,6 +26,4 @@ class WeatherData {
         'description': description,
         'icon': icon,
       };
-
-  static fromWeather(Weather w) {}
 }

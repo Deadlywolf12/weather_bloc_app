@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:weather/weather.dart';
+
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/services/location_service.dart';
 import 'home_screen.dart';

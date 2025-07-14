@@ -1,4 +1,3 @@
-import 'package:weather_bloc_app/models/city_data.dart';
 import 'package:weather_bloc_app/models/clouds_data.dart';
 import 'package:weather_bloc_app/models/main_data.dart';
 import 'package:weather_bloc_app/models/rain_data.dart';

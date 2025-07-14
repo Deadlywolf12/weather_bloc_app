@@ -1,4 +1,3 @@
-import 'package:weather/weather.dart';
 import 'package:weather_bloc_app/models/forecast_item.dart';
 import 'package:weather_bloc_app/models/forecast_response.dart';
 

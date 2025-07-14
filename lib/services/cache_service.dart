@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_bloc_app/bloc/weather/weather_event.dart';
+import 'package:weather_bloc_app/models/city_data.dart';
 import 'package:weather_bloc_app/models/forecast_response.dart';
 import 'package:weather_bloc_app/services/api_call.dart';
 
@@ -10,7 +11,7 @@ class CacheService {
   final double latitude;
   CacheService(this.longitude, this.latitude) {}
 
-  Future<ForecastResponse> GetForecastData() async {
+  Future<ForecastResponse> GetForecastData(bool useCache, bool isRe) async {
     final prefs = await SharedPreferences.getInstance();
     final ApiCall apiCall = ApiCall(
       longitude: longitude,
@@ -20,17 +21,22 @@ class CacheService {
     final cacheExpiry = prefs.getInt('forecast_expiry');
 
     final currentTime = DateTime.now().millisecondsSinceEpoch;
-    if (cachedData != null &&
+    if (useCache && cachedData != null && cacheExpiry != null) {
+      return ForecastResponse.fromJson(jsonDecode(cachedData));
+    } else if (!useCache &&
+        cachedData != null &&
         cacheExpiry != null &&
-        currentTime - cacheExpiry < 30 * 60 * 1000) {
-      final decoded = jsonDecode(cachedData);
-      final forecastList = ForecastResponse.fromJson(decoded);
-
-      print("data fetched from cache");
-
-      return forecastList;
-    } else {
+        !isRe) {
+      final isValid = currentTime - cacheExpiry < 10 * 60 * 1000;
+      if (isValid) {
+        print("⏱ Using cached data from cache service");
+        return ForecastResponse.fromJson(jsonDecode(cachedData));
+      }
+    } else if (!useCache && cachedData != null && cacheExpiry != null && isRe) {
+      print("⏱ Using api data from cache service because refresh");
       return await apiCall.fetchForecast();
     }
+    print("⏱ Using api data from cache service");
+    return await apiCall.fetchForecast();
   }
 }
