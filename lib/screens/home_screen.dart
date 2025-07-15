@@ -2,16 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:intl/intl.dart';
-
 import 'package:weather_bloc_app/bloc/weather/weather_bloc.dart';
 import 'package:weather_bloc_app/bloc/weather/weather_state.dart';
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/screens/forecast_screen.dart';
-
+import 'package:weather_bloc_app/screens/widgets/wind_direc_widget.dart';
 import 'package:weather_bloc_app/services/get_greetings.dart';
 import 'package:weather_bloc_app/services/get_weather_condition.dart';
+import 'package:weather_bloc_app/services/get_wind_direc.dart';
 import 'package:weather_bloc_app/services/handle_bg.dart';
 import 'package:weather_bloc_app/services/handle_location.dart';
 import 'package:weather_bloc_app/services/handle_location_connectivity.dart';
@@ -64,179 +63,233 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final today = forecastList.first;
         final date = DateTime.now();
-
         final formattedDate = DateFormat('EEEE d - h:mm a').format(date);
-
         final greetings = getGreeting();
 
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: AppBar(
-            backgroundColor: AppColors.background,
-            leading: Padding(
-              padding: EdgeInsets.all(screenWidth * 0.025),
-              child: Text(
-                greetings,
-                style: TextStyle(
-                    fontSize: screenWidth * 0.055, fontWeight: FontWeight.w600),
-              ),
-            ),
-            leadingWidth: screenWidth * 0.6,
-            actions: [
-              GestureDetector(
-                onTap: () => getCurrentLocationWeather(context),
-                child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.02),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.location_on_outlined),
-                      Text(city,
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.05,
-                              fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
           body: RefreshIndicator(
             onRefresh: () => refreshWeatherIfCacheExpired(context),
-            child: SingleChildScrollView(
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.05),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: screenHeight * 0.02),
-                      Center(
-                        child: Image.asset(
+              slivers: [
+                SliverAppBar(
+                  pinned: false,
+                  expandedHeight: 40,
+                  backgroundColor: AppColors.background,
+                  flexibleSpace: LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      return FlexibleSpaceBar(
+                        titlePadding: EdgeInsets.all(10.0),
+                        centerTitle: false,
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              greetings,
+                              style: TextStyle(
+                                  fontSize: screenWidth * 0.06,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            Icon(Icons.settings,
+                                size: screenWidth * 0.06,
+                                color: AppColors.white),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.02),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                        child: Container(
+                                          padding: EdgeInsets.all(20),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Current Location",
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        screenWidth * 0.05,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                city,
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        screenWidth * 0.05),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )),
+                              child: Icon(Icons.location_on,
+                                  size: screenWidth * 0.07,
+                                  color: AppColors.white),
+                            ),
+                            SizedBox(width: screenWidth * 0.02),
+                            Text(city,
+                                style: TextStyle(
+                                    fontSize: screenWidth * 0.074,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.white)),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.04),
+                        Image.asset(
                           GetWeatherCondition(code: today.weather.first.id)
                               .getWeatherCondition(),
-                          height: screenHeight * 0.25,
+                          width: screenWidth * 0.4,
                         ),
-                      ),
-                      Center(
-                        child: Text(
+                        Text(
                           "${today.main.temp.round()}°C",
                           style: TextStyle(
                               fontSize: screenWidth * 0.15,
                               fontWeight: FontWeight.w700),
                         ),
-                      ),
-                      Center(
-                        child: Text(today.weather.first.main,
+                        Text(today.weather.first.main,
                             style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w400)),
-                      ),
-                      Center(
-                        child: Text(
+                        Text(
                             "Feels like ${today.main.feelsLike.toStringAsFixed(1)}°C",
                             style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w400)),
-                      ),
-                      Center(
-                        child: Text(formattedDate,
+                        Text(formattedDate,
                             style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w300)),
-                      ),
-                      SizedBox(height: screenHeight * 0.05),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Image.asset("assets/wind.png",
-                                  height: screenHeight * 0.06),
-                              Column(
-                                children: [
-                                  const Text("Wind Speed",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                  Text("${today.wind.speed} km/h",
-                                      style: const TextStyle(fontSize: 16)),
-                                ],
-                              ),
-                              Image.asset("assets/humidity.png",
-                                  height: screenHeight * 0.06),
-                              Column(
-                                children: [
-                                  const Text("Humidity",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                  Text("${today.main.humidity} %",
-                                      style: const TextStyle(fontSize: 16)),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: screenHeight * 0.02),
-                          const Divider(color: AppColors.white),
-                          SizedBox(height: screenHeight * 0.02),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Image.asset("assets/maxTemp.png",
-                                  height: screenHeight * 0.06),
-                              Column(
-                                children: [
-                                  const Text("Max Temp",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                  Text(
-                                      "${today.main.tempMax.toStringAsFixed(1)}°C",
-                                      style: const TextStyle(fontSize: 16)),
-                                ],
-                              ),
-                              Image.asset("assets/minTemp.png",
-                                  height: screenHeight * 0.06),
-                              Column(
-                                children: [
-                                  const Text("Min Temp",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                  Text(
-                                      "${today.main.tempMin.toStringAsFixed(1)}°C",
-                                      style: const TextStyle(fontSize: 16)),
-                                ],
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      const Spacer(),
-                      const Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Text("5 days Forecast",
+                        SizedBox(height: screenHeight * 0.07),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.air, size: screenHeight * 0.055),
+                            Column(
+                              children: [
+                                const Text("Wind Speed",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text("${today.wind.speed} km/h",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                            buildWindDirectionIcon(
+                                today.wind.deg.toDouble(), context),
+                            Column(
+                              children: [
+                                const Text("Wind Direction",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text(getWindDirection(today.wind.deg.toInt()),
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        const Divider(
+                          thickness: 2,
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.thermostat_sharp,
+                                color: Colors.red, size: screenHeight * 0.055),
+                            Column(
+                              children: [
+                                const Text("Max Temp",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                    "${today.main.tempMax.toStringAsFixed(1)}°C",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                            Icon(Icons.thermostat_sharp,
+                                color: Colors.lightBlue,
+                                size: screenHeight * 0.055),
+                            Column(
+                              children: [
+                                const Text("Min Temp",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                    "${today.main.tempMin.toStringAsFixed(1)}°C",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        const Divider(thickness: 2),
+                        SizedBox(height: screenHeight * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.water_drop_rounded,
+                                size: screenHeight * 0.055),
+                            Column(
+                              children: [
+                                const Text("Humidity",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text("${today.main.humidity} %",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                            Icon(Icons.wb_cloudy_rounded,
+                                size: screenHeight * 0.055),
+                            Column(
+                              children: [
+                                const Text("Clouds",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500)),
+                                Text("${today.clouds.all} %",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.04),
+                        const Text("5 days Forecast",
                             style: TextStyle(fontSize: 16)),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: IconButton(
+                        IconButton(
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ForecastScreen(
-                                      forecast: forecastList,
-                                    )),
+                              builder: (context) => ForecastScreen(
+                                forecast: forecastList,
+                              ),
+                            ),
                           ),
                           icon: const Icon(Icons.arrow_downward, size: 25),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 300,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                )
+              ],
             ),
           ),
         );
@@ -244,15 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return Center(child: Text('Error: ${state.message}'));
       }
 
-      return Scaffold(
-        body: Center(
-          // child: ElevatedButton(
-          //   onPressed: () => _getCurrentLocationWeather(context),
-          //   child: const Text(
-          //       "Your location is currently not accessible. Please enable location first."),
-          // ),
-          child: CircularProgressIndicator(),
-        ),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     });
   }
