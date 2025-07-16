@@ -27,7 +27,6 @@ class ApiCall {
       final forecastResponse = ForecastResponse.fromJson(json);
       prefs.setString('forecast_data', jsonEncode(forecastResponse.toJson()));
       prefs.setInt('forecast_expiry', currentTime);
-      print(response.body);
 
       return forecastResponse;
     } else {

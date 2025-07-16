@@ -3,11 +3,15 @@ import 'package:weather_bloc_app/services/get_weather_by_code.dart';
 
 class GetWeatherCondition {
   final int code;
+  final int? time;
 
-  GetWeatherCondition({required this.code});
+  GetWeatherCondition({
+    required this.code,
+    this.time,
+  });
 
   String get _weather => getWeatherCode(code);
-  String get _time => getGreeting();
+  String get _time => getGreeting(time ?? DateTime.now().hour);
 
   String getWeatherCondition() {
     if (_time == "Good Morning!" || _time == "Good Afternoon!") {
@@ -25,7 +29,7 @@ class GetWeatherCondition {
         default:
           return "assets/day_partial_cloud.png";
       }
-    } else if (_time == "Good Evening!" || _time == "Good Night!") {
+    } else if (_time == "Good Night!") {
       switch (_weather) {
         case "rainWThunderStorm":
           return "assets/night_full_moon_rain_thunder.png";
@@ -40,8 +44,17 @@ class GetWeatherCondition {
         default:
           return "assets/night_full_moon_clear.png";
       }
-    } else {
-      return "assets/day_partial_cloud.png";
+    } else if (_time == "Good Evening!") {
+      switch (_weather) {
+        case "rain":
+          return "assets/dawn_rain.png";
+        case "clouds":
+          return "assets/dawn_cloudy.png";
+        case "clear":
+          return "assets/dawn.png";
+      }
     }
+
+    return "assets/day_partial_cloud.png";
   }
 }

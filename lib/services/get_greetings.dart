@@ -1,6 +1,4 @@
-String getGreeting() {
-  final hour = DateTime.now().hour;
-
+String getGreeting(int hour) {
   if (hour >= 5 && hour < 12) {
     return 'Good Morning!';
   } else if (hour >= 12 && hour < 17) {

@@ -1,20 +1,25 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_bloc_app/bloc/weather/weather_bloc.dart';
 import 'package:weather_bloc_app/bloc/weather/weather_state.dart';
+import 'package:weather_bloc_app/models/box1_data_map.dart';
+import 'package:weather_bloc_app/models/hourly_data.dart';
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/screens/forecast_screen.dart';
+import 'package:weather_bloc_app/screens/widgets/daily_forecast_widget.dart';
+import 'package:weather_bloc_app/screens/widgets/swipable_rectangle.dart';
+import 'package:weather_bloc_app/screens/widgets/vertical_card.dart';
+import 'package:weather_bloc_app/screens/widgets/weekly_forecast.dart';
 import 'package:weather_bloc_app/screens/widgets/wind_direc_widget.dart';
 import 'package:weather_bloc_app/services/get_greetings.dart';
 import 'package:weather_bloc_app/services/get_weather_condition.dart';
 import 'package:weather_bloc_app/services/get_wind_direc.dart';
-import 'package:weather_bloc_app/services/handle_bg.dart';
+
 import 'package:weather_bloc_app/services/handle_location.dart';
 import 'package:weather_bloc_app/services/handle_location_connectivity.dart';
 import 'package:weather_bloc_app/services/handle_refresh.dart';
+import 'package:weather_bloc_app/services/today_low_high_temp.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,6 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (state is ForecastLoaded) {
         final forecastList = state.forecast.forecastList;
         final city = state.forecast.city.name;
+        List<Map<String, dynamic>> hourlyData =
+            HourlyData(context: context).getTodayHourlyData(forecastList);
+        final lowTemp = getLowTemp(hourlyData);
+        final highTemp = getHighTemp(hourlyData);
 
         if (forecastList.isEmpty) {
           return Center(
@@ -64,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final today = forecastList.first;
         final date = DateTime.now();
         final formattedDate = DateFormat('EEEE d - h:mm a').format(date);
-        final greetings = getGreeting();
+        final greetings = getGreeting(DateTime.now().hour);
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -81,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder:
                         (BuildContext context, BoxConstraints constraints) {
                       return FlexibleSpaceBar(
-                        titlePadding: EdgeInsets.all(10.0),
+                        titlePadding: const EdgeInsets.all(10.0),
                         centerTitle: false,
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context: context,
                                   builder: (context) => Dialog(
                                         child: Container(
-                                          padding: EdgeInsets.all(20),
+                                          padding: const EdgeInsets.all(20),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -125,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               Text(
                                                 city,
                                                 style: TextStyle(
@@ -181,7 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500)),
-                                Text("${today.wind.speed} km/h",
+                                Text(
+                                    "${(today.wind.speed * 3.6).toStringAsFixed(1)} km/h",
                                     style: const TextStyle(fontSize: 16)),
                               ],
                             ),
@@ -215,8 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500)),
-                                Text(
-                                    "${today.main.tempMax.toStringAsFixed(1)}°C",
+                                Text("$highTemp°C",
                                     style: const TextStyle(fontSize: 16)),
                               ],
                             ),
@@ -229,8 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500)),
-                                Text(
-                                    "${today.main.tempMin.toStringAsFixed(1)}°C",
+                                Text("$lowTemp°C",
                                     style: const TextStyle(fontSize: 16)),
                               ],
                             ),
@@ -269,8 +277,60 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         SizedBox(height: screenHeight * 0.04),
-                        const Text("5 days Forecast",
-                            style: TextStyle(fontSize: 16)),
+                        SizedBox(
+                          height: screenHeight * 0.18,
+                          child: SwipableRectangle(
+                            cards: Box1Data.getSampleList(
+                                pressure: today.main.pressure,
+                                seaLevel: today.main.seaLevel,
+                                groundLevel: today.main.grndLevel),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                                height: screenHeight * 0.3,
+                                width: screenWidth * 0.4,
+                                child: VerticalCard(
+                                  icon: Icons.water_drop_rounded,
+                                  title: "Rain Fall",
+                                  description: "Chance of Rain",
+                                  data: "${today.pop}%",
+                                  trailText: today.pop > 0.5
+                                      ? "High chance of rain today! Bring an umbrella."
+                                      : "Almost No chance of rain Today!",
+                                )),
+                            SizedBox(
+                                height: screenHeight * 0.3,
+                                width: screenWidth * 0.4,
+                                child: VerticalCard(
+                                  icon: Icons.visibility,
+                                  title: "Visibility",
+                                  description: today.visibility > 1000
+                                      ? "Good Visibility"
+                                      : "Poor Visibility",
+                                  data:
+                                      "${(today.visibility / 100).toStringAsFixed(0)}%",
+                                  trailText: today.visibility > 9000
+                                      ? "Good visibility today! Drive safely."
+                                      : "Poor visibility today! Drive carefully.",
+                                )),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        HourlyForecastSlider(
+                          hourlyData: hourlyData,
+                          weatherDes:
+                              today.weather.first.description.toUpperCase(),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        WeeklyForecastWidget(
+                            weeklyData: hourlyData, weatherDes: "weatherDes"),
+                        SizedBox(height: screenHeight * 0.1),
+                        Text(today.pop.toString(),
+                            style: const TextStyle(fontSize: 16)),
                         IconButton(
                           onPressed: () => Navigator.push(
                             context,
@@ -282,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           icon: const Icon(Icons.arrow_downward, size: 25),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 300,
                         )
                       ],
