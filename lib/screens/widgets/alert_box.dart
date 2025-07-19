@@ -26,19 +26,20 @@ class AlertBox {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Text(
             content,
           ),
-          actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          actionsPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           actions: [
             OutlinedButton(
               onPressed: onBtn1Pressed,
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                side: BorderSide(color: Colors.grey),
+                side: const BorderSide(color: Colors.grey),
               ),
               child: Text(btn1),
             ),

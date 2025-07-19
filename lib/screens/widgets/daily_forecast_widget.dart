@@ -28,12 +28,14 @@ class HourlyForecastSlider extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: Text("$weatherDes , High $high°C, Low $low°C.",
                 style: const TextStyle(
-                    color: AppColors.tiles,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal)),
+                    color: Colors.white, fontWeight: FontWeight.w600)),
           ),
           const Divider(
             color: AppColors.tiles,
+            thickness: 2,
+          ),
+          SizedBox(
+            height: 6,
           ),
           SizedBox(
             height: 120,
