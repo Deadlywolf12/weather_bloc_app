@@ -10,6 +10,7 @@ import 'package:weather_bloc_app/models/hourly_data.dart';
 import 'package:weather_bloc_app/models/weekly_data.dart';
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/screens/widgets/chat_launcher.dart';
+import 'package:weather_bloc_app/screens/widgets/chatbot_chatbox.dart';
 import 'package:weather_bloc_app/screens/widgets/chatbot_widget.dart';
 
 import 'package:weather_bloc_app/screens/widgets/daily_forecast_widget.dart';
@@ -40,6 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkLocationAndConnectivity(context);
+    });
+  }
+
+  bool _isChatOpen = false;
+
+  void _toggleChatVisibility() {
+    setState(() {
+      _isChatOpen = !_isChatOpen;
     });
   }
 
@@ -175,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: AppColors.white)),
                               ],
                             ),
-                            SizedBox(height: screenHeight * 0.05),
+                            SizedBox(height: screenHeight * 0.04),
                             Image.asset(
                               GetWeatherCondition(code: today.weather.first.id)
                                   .getWeatherCondition(),
@@ -200,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(formattedDate,
                                 style: const TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.w300)),
-                            SizedBox(height: screenHeight * 0.07),
+                            SizedBox(height: screenHeight * 0.045),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -304,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: screenHeight * 0.06),
+                            SizedBox(height: screenHeight * 0.08),
                             SizedBox(
                               height: screenHeight * 0.18,
                               child: SwipableRectangle(
@@ -369,6 +378,50 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+              if (!_isChatOpen)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _toggleChatVisibility,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor2,
+                        borderRadius:
+                            BorderRadius.only(topLeft: Radius.circular(20)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/chatbot.png',
+                            width: 40,
+                          ),
+                          SizedBox(width: 6),
+                          Text("Cloudie",
+                              style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              if (_isChatOpen)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: ChatBoxBottomSheet(
+                        onClose: _toggleChatVisibility,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );

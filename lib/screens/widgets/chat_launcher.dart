@@ -49,49 +49,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Main home content
-          Positioned.fill(
-            child: Center(child: Text("Main Home Content")),
-          ),
-
-          // Chat tag
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: GestureDetector(
-              onTap: _openChatBox,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 72, 47, 97),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(2, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.chat, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text(
-                      "Chat with Cloudie",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
+    return Stack(
+      children: [
+        // Chat tag
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: GestureDetector(
+            onTap: _openChatBox,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 72, 47, 97),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 8,
+                    offset: Offset(2, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.chat, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    "Chat with Cloudie",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 }
