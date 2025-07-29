@@ -129,6 +129,24 @@ flowchart TD
     M --> N[Display Bot Response]
 ```
 
+
+
+
+---
+## 🖼️ Screenshots
+
+### 🌇 Home Forecast Overview
+<img src="pic1.jpg" width="400"/>
+
+### ☁️ Detailed Forecast cards
+<img src="pic2.jpg" width="400"/>
+
+###  ☁️ Detailed 5 days Forecast 
+<img src="pic3.jpg" width="400"/>
+
+### 🤖 Chatbot Responding to Rain Query
+<img src="chat.jpg" width="400"/>
+
 ---
 
 ## 📌 Credits
