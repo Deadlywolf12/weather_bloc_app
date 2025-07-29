@@ -36,10 +36,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onDone() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seenOnboarding', true);
-    getCurrentLocationWeather(context);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => HomeScreen()),
-    );
+    try {
+      await getCurrentLocationWeather(context);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   void _skip() {
