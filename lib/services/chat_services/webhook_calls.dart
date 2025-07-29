@@ -24,21 +24,18 @@ class WeatherBotService {
     };
 
     // Send POST request to webhook
-    try {
-      final response = await http.post(
-        Uri.parse(webhookUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['fulfillmentText'] ?? "No response.";
-      } else {
-        return "Sorry sometime went wrong";
-      }
-    } catch (e) {
-      return "Oops! Couldn't reach the server. Please try again later.";
+    final response = await http.post(
+      Uri.parse(webhookUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['fulfillmentText'] ?? "No response.";
+    } else {
+      return "Sorry sometime went wrong";
     }
   }
 }

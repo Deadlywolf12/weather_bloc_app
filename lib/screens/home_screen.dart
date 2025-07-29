@@ -99,51 +99,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return Center(child: Text('Error: ${state.message}'));
       }
 
-      return Scaffold(
-        backgroundColor: AppColors.background,
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                color: AppColors.primaryColor2,
-              ),
-              SizedBox(
-                height: screenHeight * 0.04,
-              ),
-              Text(
-                "Seems Like your Location is disabled please enable your location to use the app",
-                style: TextStyle(fontSize: screenWidth * 0.04),
-              ),
-              SizedBox(
-                height: screenHeight * 0.04,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor1,
-                        foregroundColor: AppColors.white)
-                    .copyWith(),
-                onPressed: () {
-                  checkLocationAndConnectivity(context);
-                },
-                child: Text("Get Location"),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.danger,
-                        foregroundColor: AppColors.white)
-                    .copyWith(),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-                child: Text("Exit"),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const Scaffold(
+          backgroundColor: AppColors.background,
+          body: Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primaryColor2,
+            ),
+          ));
     });
   }
 
