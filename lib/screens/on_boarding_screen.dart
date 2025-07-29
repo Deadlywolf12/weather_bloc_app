@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
+import 'package:weather_bloc_app/services/handle_location.dart';
 import 'package:weather_bloc_app/services/location_service.dart';
 import 'home_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -35,7 +36,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onDone() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seenOnboarding', true);
-    _getCurrentLocationWeather(context);
+    getCurrentLocationWeather(context);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => HomeScreen()),
+    );
   }
 
   void _skip() {
@@ -49,6 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget buildPage(Map<String, String> page) {
+    double height = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -61,7 +66,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Image.asset(page["image"]!, fit: BoxFit.contain),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(
+            height: height * 0.01,
+          ),
           Text(
             page["title"]!,
             style: const TextStyle(
@@ -74,10 +81,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 16),
           Text(
             page["body"]!,
-            style: const TextStyle(fontSize: 16, color: AppColors.white),
+            style: TextStyle(
+                fontSize: 16,
+                color: AppColors.white,
+                fontWeight: FontWeight.w300),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 50),
+          SizedBox(height: height * 0.15),
         ],
       ),
     );
@@ -156,26 +166,5 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ],
       ),
     );
-  }
-
-  void _getCurrentLocationWeather(BuildContext context) async {
-    try {
-      final position = await LocationService().determinePosition();
-      final lat = position.latitude;
-      final lon = position.longitude;
-
-      print("Lat: $lat, Lon: $lon");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lat: $lat, Lon: $lon")),
-      );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomeScreen()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
   }
 }

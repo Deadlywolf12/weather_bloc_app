@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:weather_bloc_app/app.dart';
+import 'package:weather_bloc_app/bloc/chat/chat_bloc.dart';
 import 'package:weather_bloc_app/bloc/weather/weather_bloc.dart';
 
 Future<void> main() async {
@@ -20,12 +21,15 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
 
-  runApp(
-    BlocProvider(
-      create: (_) => ForecastBloc(),
-      child: WeatherApp(
-        seenOnboarding: seenOnboarding,
-      ),
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider<ChatBloc>(create: (_) => ChatBloc()),
+      BlocProvider(
+        create: (_) => ForecastBloc(),
+      )
+    ],
+    child: WeatherApp(
+      seenOnboarding: seenOnboarding,
     ),
-  );
+  ));
 }

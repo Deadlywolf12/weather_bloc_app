@@ -3,7 +3,16 @@ import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 import 'package:weather_bloc_app/screens/widgets/chat_launcher.dart';
 
 class ChatbotWidget extends StatelessWidget {
-  const ChatbotWidget({super.key});
+  final VoidCallback walkPressed;
+  final VoidCallback rainPressed;
+  final VoidCallback wearPressed;
+  final VoidCallback toggleChat;
+  const ChatbotWidget(
+      {super.key,
+      required this.walkPressed,
+      required this.rainPressed,
+      required this.wearPressed,
+      required this.toggleChat});
 
   @override
   Widget build(BuildContext context) {
@@ -52,25 +61,25 @@ class ChatbotWidget extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.tiles)
                   .copyWith(),
-              onPressed: () {},
+              onPressed: walkPressed,
               child: Text("Best Time to walk?"),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.tiles)
                   .copyWith(),
-              onPressed: () {},
+              onPressed: rainPressed,
               child: Text("Will it Rain today?"),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.tiles)
                   .copyWith(),
-              onPressed: () {},
+              onPressed: wearPressed,
               child: Text("What should i wear today?"),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: toggleChat,
                 icon: const Icon(Icons.chat_bubble_outline),
                 label: const Text("Chat"),
                 style: ElevatedButton.styleFrom(

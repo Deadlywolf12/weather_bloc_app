@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weather_bloc_app/screens/Theme/app_colors.dart';
 
 class ChatBubble {
-  Widget createChatBubble(bool isBot, String message) {
+  Widget createChatBubble(bool isBot, String message, {Widget? child}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
@@ -36,13 +36,14 @@ class ChatBubble {
                       : const Radius.circular(0),
                 ),
               ),
-              child: Text(
-                message,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                ),
-              ),
+              child: child ??
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
             ),
           ),
           if (!isBot) ...[

@@ -22,6 +22,7 @@ class AlertBox {
       barrierDismissible: false, // prevent dismiss on outside tap
       builder: (context) {
         return AlertDialog(
+          backgroundColor: AppColors.tiles,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
@@ -46,7 +47,7 @@ class AlertBox {
             ElevatedButton(
               onPressed: onBtn2Pressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor1,
+                backgroundColor: AppColors.primaryColor2,
                 foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
